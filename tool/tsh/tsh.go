@@ -152,10 +152,9 @@ func Run(args []string, underTest bool) {
 	app.Flag("user", fmt.Sprintf("SSH proxy user [%s]", localUser)).Envar("TELEPORT_USER").StringVar(&cf.Username)
 	app.Flag("cluster", "Specify the cluster to connect").Envar("TELEPORT_SITE").StringVar(&cf.SiteName)
 	app.Flag("ttl", "Minutes to live for a SSH session").Int32Var(&cf.MinsToLive)
-	app.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
-	app.Flag("compat", "OpenSSH compatibility flag").StringVar(&cf.Compatibility)
+	app.Flag("compat", "Use --compat=oldssh for compatibility with old versions of OpenSSH").StringVar(&cf.Compatibility)
 
-	app.Flag("insecure", "Do not verify server's certificate and host name. Use only in test environments").Default("false").BoolVar(&cf.InsecureSkipVerify)
+	app.Flag("insecure", "Do not verify server's certificate and host name").Default("false").BoolVar(&cf.InsecureSkipVerify)
 	app.Flag("namespace", "Namespace of the cluster").Default(defaults.Namespace).Hidden().StringVar(&cf.Namespace)
 	app.Flag("gops", "Start gops endpoint on a given address").Hidden().BoolVar(&cf.Gops)
 	app.Flag("gops-addr", "Specify gops addr to listen on").Hidden().StringVar(&cf.GopsAddr)
@@ -170,24 +169,31 @@ func Run(args []string, underTest bool) {
 	ssh.Flag("forward", "Forward localhost connections to remote server").Short('L').StringsVar(&cf.LocalForwardPorts)
 	ssh.Flag("local", "Execute command on localhost after connecting to SSH node").Default("false").BoolVar(&cf.LocalExec)
 	ssh.Flag("tty", "Allocate TTY").Short('t').BoolVar(&cf.Interactive)
+	ssh.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
 	// join
 	join := app.Command("join", "Join the active SSH session")
 	join.Arg("session-id", "ID of the session to join").Required().StringVar(&cf.SessionID)
+	join.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
 	// play
 	play := app.Command("play", "Replay the recorded SSH session")
 	play.Arg("session-id", "ID of the session to play").Required().StringVar(&cf.SessionID)
+	play.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
 	// scp
 	scp := app.Command("scp", "Secure file copy")
 	scp.Arg("from, to", "Source and destination to copy").Required().StringsVar(&cf.CopySpec)
 	scp.Flag("recursive", "Recursive copy of subdirectories").Short('r').BoolVar(&cf.RecursiveCopy)
 	scp.Flag("port", "Port to connect to on the remote host").Short('P').Int16Var(&cf.NodePort)
 	scp.Flag("quiet", "Quiet mode").Short('q').BoolVar(&cf.Quiet)
+	scp.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
 	// ls
 	ls := app.Command("ls", "List remote SSH nodes")
+	ls.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
 	ls.Arg("labels", "List of labels to filter node list").StringVar(&cf.UserHost)
 	// clusters
 	clusters := app.Command("clusters", "List available Teleport clusters")
 	clusters.Flag("quiet", "Quiet mode").Short('q').BoolVar(&cf.Quiet)
+	clusters.Flag("identity", "Identity file").Short('i').StringVar(&cf.IdentityFileIn)
+
 	// agent (SSH agent listening on unix socket)
 	agent := app.Command("agent", "Start SSH agent on unix socket [deprecating soon]")
 	agent.Flag("socket", "SSH agent listening socket address, e.g. unix:///tmp/teleport.agent.sock").SetValue(&cf.AgentSocketAddr)
