@@ -766,7 +766,7 @@ func (a *AuthWithRoles) GetTrustedCluster(name string) (services.TrustedCluster,
 		return nil, trace.Wrap(err)
 	}
 
-	return a.authServer.getTrustedCluster(name)
+	return a.authServer.GetTrustedCluster(name)
 }
 
 func (a *AuthWithRoles) GetTrustedClusters() ([]services.TrustedCluster, error) {
@@ -775,7 +775,7 @@ func (a *AuthWithRoles) GetTrustedClusters() ([]services.TrustedCluster, error) 
 		return nil, trace.Wrap(err)
 	}
 
-	return a.authServer.getTrustedClusters()
+	return a.authServer.GetTrustedClusters()
 }
 
 func (a *AuthWithRoles) UpsertTrustedCluster(tc services.TrustedCluster) error {
@@ -815,7 +815,47 @@ func (a *AuthWithRoles) DeleteTrustedCluster(name string) error {
 		return trace.Wrap(err)
 	}
 
-	return a.authServer.deleteTrustedCluster(name)
+	return a.authServer.DeleteTrustedCluster(name)
+}
+
+// EnableTrustedCluster will enable a TrustedCluster that is already in the backend.
+func (a *AuthWithRoles) EnableTrustedCluster(t services.TrustedCluster) error {
+	log.Debugf("EnableTrustedCluster %v", t)
+
+	err := a.action(defaults.Namespace, services.KindTrustedCluster, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+	err = a.action(defaults.Namespace, services.KindCertAuthority, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+	err = a.action(defaults.Namespace, services.KindReverseTunnel, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+
+	return a.authServer.EnableTrustedCluster(t)
+}
+
+// DisableTrustedCluster will disable a TrustedCluster that is already in the backend.
+func (a *AuthWithRoles) DisableTrustedCluster(t services.TrustedCluster) error {
+	log.Debugf("DisableTrustedCluster %v", t)
+
+	err := a.action(defaults.Namespace, services.KindTrustedCluster, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+	err = a.action(defaults.Namespace, services.KindCertAuthority, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+	err = a.action(defaults.Namespace, services.KindReverseTunnel, services.ActionWrite)
+	if err != nil {
+		return trace.Wrap(err)
+	}
+
+	return a.authServer.DisableTrustedCluster(t)
 }
 
 func (a *AuthWithRoles) Close() error {

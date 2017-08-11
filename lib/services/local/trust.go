@@ -51,6 +51,15 @@ func (s *CA) DeleteCertAuthority(id services.CertAuthID) error {
 	if err != nil {
 		return trace.Wrap(err)
 	}
+	// when removing a services.CertAuthority also remove any deactivated
+	// services.CertAuthority as well if they exist.
+	err = s.DeleteKey([]string{"authorities", "deactivated", string(id.Type)}, id.DomainName)
+	if err != nil {
+		if !trace.IsNotFound(err) {
+			return trace.Wrap(err)
+		}
+	}
+
 	return nil
 }
 

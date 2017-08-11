@@ -51,6 +51,17 @@ type Trust interface {
 	GetCertAuthorities(caType CertAuthType, loadSigningKeys bool) ([]CertAuthority, error)
 }
 
+// TrustToggle manages enabling/disabling of services.CertAuthority.
+type TrustToggle interface {
+	// ActivateCertAuthority moves a CertAuthority from the deactivated list to
+	// the normal list.
+	ActivateCertAuthority(id CertAuthID) error
+
+	// DeactivateCertAuthority moves a CertAuthority from the normal list to
+	// the deactivated list.
+	DeactivateCertAuthority(id CertAuthID) error
+}
+
 const (
 	// HostCA identifies the key as a host certificate authority
 	HostCA CertAuthType = "host"

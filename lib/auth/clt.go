@@ -1520,6 +1520,16 @@ func (c *Client) DeleteTrustedCluster(name string) error {
 	return trace.Wrap(err)
 }
 
+// EnableTrustedCluster will enable a TrustedCluster that is already in the backend.
+func (c *Client) EnableTrustedCluster(trustedCluster services.TrustedCluster) error {
+	return c.UpsertTrustedCluster(trustedCluster)
+}
+
+// DisableTrustedCluster will disable a TrustedCluster that is already in the backend.
+func (c *Client) DisableTrustedCluster(trustedCluster services.TrustedCluster) error {
+	return c.UpsertTrustedCluster(trustedCluster)
+}
+
 // WebService implements features used by Web UI clients
 type WebService interface {
 	// GetWebSessionInfo checks if a web sesion is valid, returns session id in case if

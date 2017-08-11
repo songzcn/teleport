@@ -72,6 +72,7 @@ func NewAuthServer(cfg *InitConfig, opts ...AuthServerOption) *AuthServer {
 	if cfg.Trust == nil {
 		cfg.Trust = local.NewCAService(cfg.Backend)
 	}
+	trustToggle := local.NewTrustToggleService(cfg.Backend, cfg.Trust)
 	if cfg.Presence == nil {
 		cfg.Presence = local.NewPresenceService(cfg.Backend)
 	}
@@ -92,6 +93,7 @@ func NewAuthServer(cfg *InitConfig, opts ...AuthServerOption) *AuthServer {
 		bk:                   cfg.Backend,
 		Authority:            cfg.Authority,
 		Trust:                cfg.Trust,
+		TrustToggle:          trustToggle,
 		Presence:             cfg.Presence,
 		Provisioner:          cfg.Provisioner,
 		Identity:             cfg.Identity,
@@ -142,6 +144,7 @@ type AuthServer struct {
 	AuthServiceName string
 
 	services.Trust
+	services.TrustToggle
 	services.Presence
 	services.Provisioner
 	services.Identity
